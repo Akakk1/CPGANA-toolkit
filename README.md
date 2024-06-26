@@ -46,6 +46,7 @@ Chloroplast genomics is crucial for understanding plant evolution and biodiversi
 
 ### 要求 / Requirements
 如果你直接使用Python代码，你需要安装以下依赖：
+
 If you are directly using Python code, you need to install the following dependencies:
 - pyqt5==5.15.10
 - matplotlib == 3.5.0
@@ -61,10 +62,12 @@ We provide a release package that you can download directly. For Windows users, 
 
 ## 使用指南 / Usage Guide
 CPGANA-toolkit 简单易懂，不需要额外的说明，具体可以参考示例文件。
+
 CPGANA-toolkit are straightforward and easy to understand, requiring no additional explanation. For specifics, please refer to the example files.
 
 ## 联系 / Contact
 如果需要帮助，或者本项目侵犯了您的合法权益，请通过以下方式联系我们：  
+
 If you need assistance or believe this project infringes on your legal rights, please contact us through the following channels:
 - 电子邮件 / Email: `lajbaj149@gmail.com`
 
