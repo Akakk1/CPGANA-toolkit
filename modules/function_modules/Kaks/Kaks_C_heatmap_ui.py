@@ -18,10 +18,21 @@ import sys
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QFileDialog, QMessageBox, QSpinBox, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QFileDialog, QMessageBox, QSpinBox, QHBoxLayout, QComboBox
 from PyQt5.QtCore import Qt
 import os
+from matplotlib.colors import Normalize
+
+class MidpointNormalize(Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
 
 class CHeatmapVisualizerApp(QMainWindow):
     def __init__(self):
@@ -33,6 +44,7 @@ class CHeatmapVisualizerApp(QMainWindow):
         self.df = None
         self.output_dir = None
         self.dpi_value = 300
+        self.colormap = 'coolwarm'
 
         self.create_widgets()
 
@@ -81,6 +93,17 @@ class CHeatmapVisualizerApp(QMainWindow):
         dpi_layout.addWidget(self.dpi_spinbox)
         layout.addLayout(dpi_layout)
 
+        # Colormap selection
+        colormap_layout = QHBoxLayout()
+        colormap_label = QLabel('Select Colormap:')
+        colormap_layout.addWidget(colormap_label)
+
+        self.colormap_combo = QComboBox()
+        self.colormap_combo.addItems(['coolwarm', 'viridis', 'plasma', 'inferno', 'magma'])
+        self.colormap_combo.currentTextChanged.connect(self.set_colormap)
+        colormap_layout.addWidget(self.colormap_combo)
+        layout.addLayout(colormap_layout)
+
         # Plot button (initially disabled)
         self.plot_button = QPushButton('Plot Heatmap', clicked=self.plot_heatmap)
         self.plot_button.setEnabled(False)
@@ -104,6 +127,9 @@ class CHeatmapVisualizerApp(QMainWindow):
         if self.file_path and self.output_dir:
             self.plot_button.setEnabled(True)
 
+    def set_colormap(self, colormap):
+        self.colormap = colormap
+
     def plot_heatmap(self):
         if self.file_path:
             try:
@@ -115,8 +141,13 @@ class CHeatmapVisualizerApp(QMainWindow):
                 sns.set(font='Times New Roman')
                 sns.set_style('ticks')
 
+                # Define symmetric normalization around 1
+                vmin = df_transposed.min().min()
+                vmax = df_transposed.max().max()
+                norm = MidpointNormalize(vmin=vmin, vmax=vmax, midpoint=1)
+
                 # Create clustermap
-                cluster = sns.clustermap(df_transposed, cmap='viridis', figsize=(36, 12), linewidths=0.5, linecolor='black')
+                cluster = sns.clustermap(df_transposed, cmap=self.colormap, norm=norm, figsize=(36, 12), linewidths=0.5, linecolor='black')
 
                 # Adjust tick labels
                 for tick_label in cluster.ax_heatmap.get_yticklabels():
