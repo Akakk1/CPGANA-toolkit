@@ -124,8 +124,6 @@ class AlignmentWorker(QThread):
             f.write(f"{aligned_seq1}\n")
             f.write(f"{aligned_seq2}\n\n")
 
-
-
 class SimplePairwiseAilgnment_codon_App(QWidget):
     def __init__(self):
         super().__init__()
@@ -146,12 +144,12 @@ class SimplePairwiseAilgnment_codon_App(QWidget):
         # Input layout
         input_layout = QHBoxLayout()
 
-        self.selectedFileLabel = QLineEdit('No file selected', self)
+        self.selectedFileLabel = QLineEdit('No files selected', self)
         self.selectedFileLabel.setReadOnly(True)
         input_layout.addWidget(self.selectedFileLabel)
         
-        self.selectFileBtn = QPushButton('Select Sequence File', self)
-        self.selectFileBtn.clicked.connect(self.selectFile)
+        self.selectFileBtn = QPushButton('Select Sequence Files', self)
+        self.selectFileBtn.clicked.connect(self.selectFiles)
         input_layout.addWidget(self.selectFileBtn)
         
         layout.addLayout(input_layout)
@@ -185,14 +183,14 @@ class SimplePairwiseAilgnment_codon_App(QWidget):
 
         self.setLayout(layout)
 
-    def selectFile(self):
-        file, _ = QFileDialog.getOpenFileName(self, 'Select Sequence File', '', 'FASTA Files (*.fasta)')
-        if file:
-            self.selectedFile = file
-            self.selectedFileLabel.setText(os.path.basename(file))
+    def selectFiles(self):
+        files, _ = QFileDialog.getOpenFileNames(self, 'Select Sequence Files', '', 'FASTA Files (*.fasta)')
+        if files:
+            self.selectedFiles = files
+            self.selectedFileLabel.setText(f'{len(files)} files selected')
         else:
-            self.selectedFile = None
-            self.selectedFileLabel.setText('No file selected')
+            self.selectedFiles = []
+            self.selectedFileLabel.setText('No files selected')
 
     def selectOutputDirectory(self):
         directory = QFileDialog.getExistingDirectory(self, 'Select Output Directory')
@@ -203,27 +201,37 @@ class SimplePairwiseAilgnment_codon_App(QWidget):
             self.outputDirectory = None
             self.selectedOutputLabel.setText('No output directory selected')
 
-
     def runAlignment(self):
-        if not hasattr(self, 'selectedFile') or not self.selectedFile:
-            QMessageBox.warning(self, 'Warning', 'Please select a sequence file')
+        if not hasattr(self, 'selectedFiles') or not self.selectedFiles:
+            QMessageBox.warning(self, 'Warning', 'Please select sequence files')
             return
         if not hasattr(self, 'outputDirectory') or not self.outputDirectory:
             QMessageBox.warning(self, 'Warning', 'Please select output directory')
             return
 
         self.progressBar.setValue(0)
+        self.total_files = len(self.selectedFiles)
+        self.processed_files = 0
 
-        # Create an instance of the worker thread
-        self.worker = AlignmentWorker(self.selectedFile, self.outputDirectory, self)
-        self.worker.progressUpdate.connect(self.progressBar.setValue)
-        self.worker.message.connect(lambda msg: self.outputTextEdit.append(msg))
+        for file in self.selectedFiles:
+            worker = AlignmentWorker(file, self.outputDirectory, self)
+            worker.progressUpdate.connect(self.updateProgress)
+            worker.message.connect(lambda msg: self.outputTextEdit.append(msg))
+            worker.finished.connect(self.fileProcessed)
+            worker.start()
 
-        # Start the worker thread
-        self.worker.start()
+    def updateProgress(self, value):
+        self.progressBar.setValue(value)
+
+    def fileProcessed(self):
+        self.processed_files += 1
+        if self.processed_files == self.total_files:
+            self.progressBar.setValue(100)
+            QMessageBox.information(self, 'Information', 'All files processed')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = SimplePairwiseAilgnment_codon_App()
     ex.show()
     sys.exit(app.exec_())
+
