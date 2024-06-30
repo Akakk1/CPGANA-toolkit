@@ -148,6 +148,10 @@ def calculate_pi_for_file(fasta_file):
 
     all_number = len(sequences) * (len(sequences) - 1) / 2
     filtered_sequences = filter_out_gaps(sequences, gaps_positions)
+    
+    if not filtered_sequences:
+        return format(0.0, '.5f')
+
     pi_value = calculate_pi(filtered_sequences, all_number)
 
     return format(pi_value, '.5f')
@@ -164,6 +168,10 @@ def filter_out_gaps(sequences, gaps_positions):
 def calculate_pi(sequences, all_number):
     pi = 0
     num_sequences = len(sequences)
+    
+    if not sequences or not sequences[0]:
+        return 0.0
+
     for i in range(len(sequences[0])):
         column = [seq[i] for seq in sequences]
         diff = sum(1 for j in range(num_sequences) for k in range(j + 1, num_sequences) if column[j] != column[k])
