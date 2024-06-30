@@ -183,6 +183,14 @@ class PiplotApp(QMainWindow):
         row8_layout.addWidget(self.plot_button)
         layout.addLayout(row8_layout)
 
+        # Row 9: Figure Width and Height
+        row9_layout = QHBoxLayout()
+        row9_layout.addWidget(self.fig_width_label)
+        row9_layout.addWidget(self.fig_width_spinbox)
+        row9_layout.addWidget(self.fig_height_label)
+        row9_layout.addWidget(self.fig_height_spinbox)
+        layout.addLayout(row9_layout)
+
         # Main widget
         main_widget = QWidget()
         main_widget.setLayout(layout)
@@ -249,11 +257,11 @@ class PiplotApp(QMainWindow):
             marker_width = self.marker_width_spinbox.value()
 
             # Create figure with specified DPI and size
-            fig, ax = plt.subplots(figsize=(fig_width*1.2, fig_height), dpi=self.selected_dpi)
+            fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=self.selected_dpi)
 
             if self.chart_type_combo.currentText() == 'Line Chart':
                 color = self.selected_color if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked() else self.default_color
-                ax.plot(midpoints, y_data, marker='o', color=color, markersize=marker_size/4, markeredgewidth=marker_width)
+                ax.plot(midpoints, y_data, marker='o', color=color, markersize=marker_size, markeredgewidth=marker_width)
             elif self.chart_type_combo.currentText() == 'Bar Chart':
                 color = self.selected_color if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked() else self.default_color
                 ax.bar(midpoints, y_data, color=color, edgecolor='gray')
@@ -267,7 +275,7 @@ class PiplotApp(QMainWindow):
                 # Mark points above the standard line
                 above_standard = y_data > standard_line_value
                 for midpoint, value in zip(midpoints[above_standard], y_data[above_standard]):
-                    ax.text(midpoint, value, f'({midpoint}, {value:.2f})', ha='center', va='bottom', fontsize=4)
+                    ax.text(midpoint, value, f'({midpoint}, {value:.5f})', ha='center', va='bottom', fontsize=4)
 
             except ValueError:
                 pass  # No valid standard line provided
@@ -309,13 +317,14 @@ class PiplotApp(QMainWindow):
 
             # Show plot
             plt.tight_layout()
-            plt.show()
-
             # Save plot to output directory
             if hasattr(self, 'output_dir'):
                 output_file = os.path.join(self.output_dir, 'Piplot.png')
-                fig.savefig(output_file)
-                QMessageBox.information(self, 'Success', f'Chart saved to:\n{output_file}')
+                fig.savefig(output_file, dpi=self.selected_dpi)
+                QMessageBox.information(self, 'Success', f'Chart saved to:\n{output_file}')            
+            plt.show()
+
+
 
         except Exception as e:
             QMessageBox.critical(self, 'Error', f'Error plotting chart:\n{str(e)}')
