@@ -85,6 +85,19 @@ class PiplotApp_V2(QMainWindow):
         self.dpi_spinbox.setValue(self.selected_dpi)
         self.dpi_spinbox.valueChanged.connect(self.selectDPI)
 
+        # Widgets for custom figure size
+        self.fig_width_label = QLabel('Figure Width:')
+        self.fig_width_spinbox = QSpinBox()
+        self.fig_width_spinbox.setMinimum(1)
+        self.fig_width_spinbox.setMaximum(50)
+        self.fig_width_spinbox.setValue(10)
+
+        self.fig_height_label = QLabel('Figure Height:')
+        self.fig_height_spinbox = QSpinBox()
+        self.fig_height_spinbox.setMinimum(1)
+        self.fig_height_spinbox.setMaximum(50)
+        self.fig_height_spinbox.setValue(6)
+
         # Widgets for standard line
         self.standard_line_label = QLabel('Standard Line (y-axis):')
         self.standard_line_edit = QLineEdit()
@@ -131,22 +144,30 @@ class PiplotApp_V2(QMainWindow):
         row4_layout.addWidget(self.dpi_spinbox)
         layout.addLayout(row4_layout)
 
-        # Row 5: Standard Line
+        # Row 5: Custom Figure Size
         row5_layout = QHBoxLayout()
-        row5_layout.addWidget(self.standard_line_label)
-        row5_layout.addWidget(self.standard_line_edit)
+        row5_layout.addWidget(self.fig_width_label)
+        row5_layout.addWidget(self.fig_width_spinbox)
+        row5_layout.addWidget(self.fig_height_label)
+        row5_layout.addWidget(self.fig_height_spinbox)
         layout.addLayout(row5_layout)
 
-        # Row 6: Default Color and Font Checkbox
+        # Row 6: Standard Line
         row6_layout = QHBoxLayout()
-        row6_layout.addWidget(self.default_color_checkbox)
-        row6_layout.addWidget(self.default_font_checkbox)
+        row6_layout.addWidget(self.standard_line_label)
+        row6_layout.addWidget(self.standard_line_edit)
         layout.addLayout(row6_layout)
 
-        # Row 7: Plot Chart Button
+        # Row 7: Default Color and Font Checkbox
         row7_layout = QHBoxLayout()
-        row7_layout.addWidget(self.plot_button)
+        row7_layout.addWidget(self.default_color_checkbox)
+        row7_layout.addWidget(self.default_font_checkbox)
         layout.addLayout(row7_layout)
+
+        # Row 8: Plot Chart Button
+        row8_layout = QHBoxLayout()
+        row8_layout.addWidget(self.plot_button)
+        layout.addLayout(row8_layout)
 
         # Main widget
         main_widget = QWidget()
@@ -208,15 +229,9 @@ class PiplotApp_V2(QMainWindow):
             names = data['Name']
             values = data['Value']
 
-            # Determine figure size based on number of data points and DPI
-            num_entries = len(names)
-            base_width = max(6, num_entries * 0.2)  # Base width
-            base_height = base_width / 4  # Base height
-
-            # Adjust figure size to compensate for DPI changes
-            scale_factor = 100 / self.selected_dpi
-            fig_width = base_width * scale_factor
-            fig_height = base_height * scale_factor
+            # Determine figure size based on user input
+            fig_width = self.fig_width_spinbox.value()
+            fig_height = self.fig_height_spinbox.value()
 
             # Create figure with specified DPI
             fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=self.selected_dpi)
@@ -227,7 +242,7 @@ class PiplotApp_V2(QMainWindow):
                 else:
                     color = self.default_color
 
-                ax.plot(names, values, marker='o', color=color, markersize = base_width/6,markeredgewidth= base_width/150)
+                ax.plot(names, values, marker='o', color=color, markersize = fig_width/6,markeredgewidth= fig_width/150)
             elif self.chart_type_combo.currentText() == 'Bar Chart':
                 if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked():
                     color = self.selected_color
@@ -283,13 +298,16 @@ class PiplotApp_V2(QMainWindow):
             
             # Show plot
             plt.tight_layout()
-            plt.show()
-
+            
             # Save plot to output directory
             if hasattr(self, 'output_dir'):
                 output_file = os.path.join(self.output_dir, 'Piplot_V2.png')
-                fig.savefig(output_file)
+                fig.savefig(output_file, dpi=self.selected_dpi)
                 QMessageBox.information(self, 'Success', f'Chart saved to:\n{output_file}')
+
+            plt.show()
+
+
 
         except Exception as e:
             QMessageBox.critical(self, 'Error', f'Error plotting chart:\n{str(e)}')
