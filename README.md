@@ -24,7 +24,7 @@ Attention! This project includes other third-party programs! Please refer to the
 Chloroplast genomics is crucial for understanding plant evolution and biodiversity, yet user-friendly analysis tools are scarce. Existing software often lacks integration, hindering efficient data analysis and visualization. Many tools rely on command-line interfaces, posing challenges for researchers accustomed to graphical interfaces. To address these issues, we developed the CPGANA toolkit. This software integrates essential tools for chloroplast genome analysis and visualization, while also featuring a user-friendly graphical interface, providing a convenient platform to accelerate chloroplast genomics research.
 
 ## 特性 / Features
-- 序列分析工具，如注释文件信息提取，四倍区搜索与GC含量统计，序列方向调整和简单格式转换工具。
+- 序列分析工具，如注释文件信息提取，四分体区域搜索与GC含量统计，序列方向调整和简单格式转换工具。
 - 简单重复序列（SSR）分析，包含长度、重复类型和位置类型的统计，支持条形图和南丁格尔玫瑰图等可视化工具。
 - 相对同义密码子使用（RSCU）分析，用于计算和可视化密码子使用模式。
 - 基于滑动窗口或基因间区的核苷酸多样性（Pi）计算和绘图。
