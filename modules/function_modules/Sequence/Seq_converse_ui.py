@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-
 import os
 import sys
 from PyQt5.QtCore import Qt
@@ -28,7 +27,7 @@ class FileFormatConvertApp(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle("File Format Conversion")
-        self.setGeometry(100, 100, 600, 200)
+        self.setGeometry(100, 100, 600, 250)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -51,6 +50,15 @@ class FileFormatConvertApp(QMainWindow):
         input_layout.addWidget(self.button_browse_input)
         layout.addLayout(input_layout)
 
+        # Input Format
+        input_format_layout = QHBoxLayout()
+        self.label_input_format = QLabel("Input Format:")
+        input_format_layout.addWidget(self.label_input_format)
+        self.input_format_combo = QComboBox(self)
+        self.input_format_combo.addItems(["genbank", "fasta", "embl", "phd", "seqxml", "tab"])
+        input_format_layout.addWidget(self.input_format_combo)
+        layout.addLayout(input_format_layout)
+
         # Output Directory
         output_layout = QHBoxLayout()
         self.label_output_dir = QLabel("Output Directory:")
@@ -67,7 +75,7 @@ class FileFormatConvertApp(QMainWindow):
         self.label_output_format = QLabel("Output Format:")
         format_layout.addWidget(self.label_output_format)
         self.output_format_combo = QComboBox(self)
-        self.output_format_combo.addItems(["fasta", "gff"])
+        self.output_format_combo.addItems(["fasta", "gff", "embl", "phd", "seqxml", "tab"])
         format_layout.addWidget(self.output_format_combo)
         layout.addLayout(format_layout)
 
@@ -90,27 +98,28 @@ class FileFormatConvertApp(QMainWindow):
 
     def convert_files(self):
         input_files = self.input_files_entry.text().split(';')
+        input_format = self.input_format_combo.currentText()
         output_directory = self.output_directory_entry.text()
         output_format = self.output_format_combo.currentText()
 
-        if not input_files or not output_directory or not output_format:
+        if not input_files or not input_format or not output_directory or not output_format:
             QMessageBox.warning(self, "Warning", "Please fill in all fields.")
             return
 
         try:
             for input_file in input_files:
-                self.convert_format(input_file, output_directory, output_format)
+                self.convert_format(input_file, input_format, output_directory, output_format)
             QMessageBox.information(self, "Conversion Successful", f"Files converted successfully to {output_format} format.")
         except Exception as e:
             QMessageBox.critical(self, "Conversion Error", f"An error occurred during conversion: {str(e)}")
 
-    def convert_format(self, input_file, output_directory, output_format):
+    def convert_format(self, input_file, input_format, output_directory, output_format):
         input_basename = os.path.basename(input_file)
         output_file = os.path.join(output_directory, os.path.splitext(input_basename)[0] + f".{output_format}")
 
         try:
             with open(output_file, 'w') as out:
-                records = SeqIO.parse(input_file, "genbank")
+                records = SeqIO.parse(input_file, input_format)
                 SeqIO.write(records, out, output_format)
         except Exception as e:
             raise e

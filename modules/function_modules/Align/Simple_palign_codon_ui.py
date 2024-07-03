@@ -234,4 +234,3 @@ if __name__ == '__main__':
     ex = SimplePairwiseAilgnment_codon_App()
     ex.show()
     sys.exit(app.exec_())
-

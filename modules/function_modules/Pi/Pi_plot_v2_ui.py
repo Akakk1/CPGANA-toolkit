@@ -36,7 +36,7 @@ class PiplotApp_V2(QMainWindow):
 
         # Default color
         self.default_color = 'black'
-        self.selected_dpi = 200  # Default DPI
+        self.selected_dpi = 300  # Default DPI
 
         self.initUI()
 
@@ -81,7 +81,7 @@ class PiplotApp_V2(QMainWindow):
         self.dpi_label = QLabel('Select DPI:')
         self.dpi_spinbox = QSpinBox()
         self.dpi_spinbox.setMinimum(50)
-        self.dpi_spinbox.setMaximum(300)
+        self.dpi_spinbox.setMaximum(500)
         self.dpi_spinbox.setValue(self.selected_dpi)
         self.dpi_spinbox.valueChanged.connect(self.selectDPI)
 
@@ -242,7 +242,7 @@ class PiplotApp_V2(QMainWindow):
                 else:
                     color = self.default_color
 
-                ax.plot(names, values, marker='o', color=color, markersize = fig_width/6,markeredgewidth= fig_width/150)
+                ax.plot(names, values, marker='o', color=color, markersize = fig_width/10,markeredgewidth= fig_width/150)
             elif self.chart_type_combo.currentText() == 'Bar Chart':
                 if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked():
                     color = self.selected_color

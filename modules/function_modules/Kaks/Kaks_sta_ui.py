@@ -16,7 +16,7 @@ class KaksStaApp(QMainWindow):
         layout = QVBoxLayout()
 
         title_label = QLabel('KaKs Result Statistics', self)
-        title_label.setFont(QFont('Arial', 16, QFont.Bold))
+        title_label.setFont(QFont('Arial', 16))
         layout.addWidget(title_label)
 
         self.file_text = QPlainTextEdit(self)

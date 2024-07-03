@@ -22,7 +22,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog,
-                             QMessageBox, QApplication, QComboBox, QHBoxLayout, QSpinBox)
+                             QMessageBox, QApplication, QComboBox, QHBoxLayout, QSpinBox, QCheckBox)
 
 
 class SSRStatisticsPlotter_length(QWidget):
@@ -98,6 +98,34 @@ class SSRStatisticsPlotter_length(QWidget):
 
         layout.addLayout(color_layout)
 
+        # Font selection
+        font_layout = QHBoxLayout()
+
+        font_label = QLabel("Select font:")
+        font_layout.addWidget(font_label)
+
+        self.font_var = QComboBox()
+        fonts = ['Times New Roman', 'Arial', 'Courier New', 'Calibri', 'Verdana']
+        self.font_var.addItems(fonts)
+        font_layout.addWidget(self.font_var)
+
+        font_size_label = QLabel("Font size:")
+        font_layout.addWidget(font_size_label)
+
+        self.font_size_spinbox = QSpinBox()
+        self.font_size_spinbox.setMinimum(8)
+        self.font_size_spinbox.setMaximum(30)
+        self.font_size_spinbox.setValue(10)
+        font_layout.addWidget(self.font_size_spinbox)
+
+        self.bold_checkbox = QCheckBox("Bold")
+        font_layout.addWidget(self.bold_checkbox)
+
+        self.italic_checkbox = QCheckBox("Italic")
+        font_layout.addWidget(self.italic_checkbox)
+
+        layout.addLayout(font_layout)
+
         # Plot button
         plot_btn = QPushButton("Plot Graph")
         plot_btn.clicked.connect(self.plot_graph)
@@ -142,10 +170,10 @@ class SSRStatisticsPlotter_length(QWidget):
             cmap = plt.cm.get_cmap(self.color_var.currentText(), len(categories))
 
             # Plotting
-            plt.rcParams['font.family'] = 'Times New Roman'
-            plt.rcParams['font.weight'] = 'bold'
-            plt.rcParams['font.style'] = 'italic'
-            plt.rcParams['font.size'] = 10
+            plt.rcParams['font.family'] = self.font_var.currentText()
+            plt.rcParams['font.size'] = self.font_size_spinbox.value()
+            plt.rcParams['font.weight'] = 'bold' if self.bold_checkbox.isChecked() else 'normal'
+            plt.rcParams['font.style'] = 'italic' if self.italic_checkbox.isChecked() else 'normal'
 
             plt.figure(figsize=(16, 6))
             rects = []

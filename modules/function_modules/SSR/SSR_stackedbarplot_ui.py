@@ -17,7 +17,7 @@ limitations under the License.
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, 
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTabWidget, QScrollArea, QSizePolicy,
                              QFileDialog, QMessageBox, QHBoxLayout, QCheckBox, QComboBox, QSpinBox, QFontDialog)
 from PyQt5.QtCore import Qt                             
 from PyQt5.QtGui import QFont
@@ -33,7 +33,7 @@ class PlotSettings:
         self.color_scheme = 'tab10'
         self.show_data_labels = False
         self.data_label_font_size = 10
-        self.dpi = 200
+        self.dpi = 300
         self.width = 10
         self.height = 6
         self.legend_rows = 1
@@ -55,156 +55,166 @@ class SSRStatisticsStackedPlotter(QWidget):
 
         layout = QVBoxLayout()
 
+        tabs = QTabWidget()
+        tabs.setMinimumSize(10, 10)
+        size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        tabs.setSizePolicy(size_policy)        
+        
+        # File Tab
+        file_tab = QWidget()
+        file_layout = QVBoxLayout()
         frame_file = QHBoxLayout()
         label_file = QLabel("Selected File:")
         frame_file.addWidget(label_file)
-        
         self.entry_file = QLineEdit()
         frame_file.addWidget(self.entry_file)
-        
         button_select = QPushButton("Browse")
         button_select.clicked.connect(self.select_file)
         frame_file.addWidget(button_select)
-        
-        layout.addLayout(frame_file)
+        file_layout.addLayout(frame_file)
+        file_tab.setLayout(file_layout)
+        tabs.addTab(file_tab, "File")
 
-        # Font, Color Scheme, and Font Style
+        # Appearance Tab
+        appearance_tab = QWidget()
+        appearance_layout = QVBoxLayout()
         frame_font_color = QHBoxLayout()
-
         frame_font = QHBoxLayout()
         label_font = QLabel("Font:")
         frame_font.addWidget(label_font)
-
         self.display_font = QLineEdit()
         self.display_font.setReadOnly(True)
         frame_font.addWidget(self.display_font)
-
         button_font = QPushButton("Select")
         button_font.clicked.connect(self.select_font)
         frame_font.addWidget(button_font)
-
         frame_font_color.addLayout(frame_font)
-
         frame_combo = QHBoxLayout()
         label_combo = QLabel("Color Scheme:")
         frame_combo.addWidget(label_combo)
-
         self.combo_color = QComboBox()
         self.combo_color.addItems(['tab10', 'tab20', 'tab20b', 'tab20c'])
         self.combo_color.setCurrentText(self.settings.color_scheme)
         self.combo_color.currentTextChanged.connect(self.update_color_scheme)
         frame_combo.addWidget(self.combo_color)
-
         frame_font_color.addLayout(frame_combo)
+        appearance_layout.addLayout(frame_font_color)
+        appearance_tab.setLayout(appearance_layout)
+        tabs.addTab(appearance_tab, "Appearance")
 
-        layout.addLayout(frame_font_color)
-
-        # Switch Axis, Show Data Labels, Data Label Font Size
+        # Data Labels Tab
+        data_labels_tab = QWidget()
+        data_labels_layout = QVBoxLayout()
         frame_switch_data_labels = QHBoxLayout()
-        
         self.checkbox_switch_axis = QCheckBox("Switch Axis")
         self.checkbox_switch_axis.stateChanged.connect(self.update_switch_axis)
         frame_switch_data_labels.addWidget(self.checkbox_switch_axis)
-
         self.checkbox_data_labels = QCheckBox("Show Data Labels")
         self.checkbox_data_labels.stateChanged.connect(self.update_data_labels)
         frame_switch_data_labels.addWidget(self.checkbox_data_labels)
-
         label_data_label_font_size = QLabel("Data Label Font Size:")
         frame_switch_data_labels.addWidget(label_data_label_font_size)
-
         self.spinbox_data_label_font_size = QSpinBox()
         self.spinbox_data_label_font_size.setRange(1, 20)
         self.spinbox_data_label_font_size.setValue(self.settings.data_label_font_size)
         self.spinbox_data_label_font_size.valueChanged.connect(self.update_data_label_font_size)
         frame_switch_data_labels.addWidget(self.spinbox_data_label_font_size)
+        data_labels_layout.addLayout(frame_switch_data_labels)
+        data_labels_tab.setLayout(data_labels_layout)
+        tabs.addTab(data_labels_tab, "Data Labels")
 
-        layout.addLayout(frame_switch_data_labels)
-
-        # Legend Rows, Columns, Font Size, Position
+        # Legend Tab
+        legend_tab = QWidget()
+        legend_layout = QVBoxLayout()
         frame_legend = QHBoxLayout()
         label_legend_rows = QLabel("Legend Rows:")
         frame_legend.addWidget(label_legend_rows)
-
         self.spinbox_legend_rows = QSpinBox()
         self.spinbox_legend_rows.setRange(1, 20)
         self.spinbox_legend_rows.setValue(self.settings.legend_rows)
         self.spinbox_legend_rows.valueChanged.connect(self.update_legend_rows)
         frame_legend.addWidget(self.spinbox_legend_rows)
-
         label_legend_cols = QLabel("Legend Columns:")
         frame_legend.addWidget(label_legend_cols)
-
         self.spinbox_legend_cols = QSpinBox()
         self.spinbox_legend_cols.setRange(1, 20)
         self.spinbox_legend_cols.setValue(self.settings.legend_cols)
         self.spinbox_legend_cols.valueChanged.connect(self.update_legend_cols)
         frame_legend.addWidget(self.spinbox_legend_cols)
-
         label_legend_font_size = QLabel("Legend Font Size:")
         frame_legend.addWidget(label_legend_font_size)
-
         self.spinbox_legend_font_size = QSpinBox()
         self.spinbox_legend_font_size.setRange(1, 20)
         self.spinbox_legend_font_size.setValue(self.settings.legend_font_size)
         self.spinbox_legend_font_size.valueChanged.connect(self.update_legend_font_size)
         frame_legend.addWidget(self.spinbox_legend_font_size)
-
         label_legend_position = QLabel("Legend Position:")
         frame_legend.addWidget(label_legend_position)
-
         self.combo_legend_position = QComboBox()
         self.combo_legend_position.addItems(['upper right', 'upper left', 'lower left', 'lower right', 'upper center', 'lower center'])
         self.combo_legend_position.setCurrentText(self.settings.legend_position)
         self.combo_legend_position.currentTextChanged.connect(self.update_legend_position)
         frame_legend.addWidget(self.combo_legend_position)
+        legend_layout.addLayout(frame_legend)
+        legend_tab.setLayout(legend_layout)
+        tabs.addTab(legend_tab, "Legend")
 
-        layout.addLayout(frame_legend)
-
-        # Width and Height
+        # Dimensions Tab
+        dimensions_tab = QWidget()
+        dimensions_layout = QVBoxLayout()
         frame_dimensions = QHBoxLayout()
         label_width = QLabel("Width:")
         frame_dimensions.addWidget(label_width)
-
         self.spinbox_width = QSpinBox()
         self.spinbox_width.setRange(1, 2000)
         self.spinbox_width.setValue(self.settings.width)
         self.spinbox_width.valueChanged.connect(self.update_width)
         frame_dimensions.addWidget(self.spinbox_width)
-
         label_height = QLabel("Height:")
         frame_dimensions.addWidget(label_height)
-
         self.spinbox_height = QSpinBox()
         self.spinbox_height.setRange(1, 600)
         self.spinbox_height.setValue(self.settings.height)
         self.spinbox_height.valueChanged.connect(self.update_height)
         frame_dimensions.addWidget(self.spinbox_height)
+        dimensions_layout.addLayout(frame_dimensions)
+        dimensions_tab.setLayout(dimensions_layout)
+        tabs.addTab(dimensions_tab, "Dimensions")
 
-        layout.addLayout(frame_dimensions)
-
-        # Save Directory
+        # Save Directory Tab
+        save_dir_tab = QWidget()
+        save_dir_layout = QVBoxLayout()
         frame_save_dir = QHBoxLayout()
         self.entry_save_dir = QLineEdit()
         self.entry_save_dir.setReadOnly(True)
         frame_save_dir.addWidget(self.entry_save_dir)
-
         button_save_dir = QPushButton("Select Save Directory")
         button_save_dir.clicked.connect(self.select_save_directory)
         frame_save_dir.addWidget(button_save_dir)
+        save_dir_layout.addLayout(frame_save_dir)
+        save_dir_tab.setLayout(save_dir_layout)
+        tabs.addTab(save_dir_tab, "Save Directory")
 
-        layout.addLayout(frame_save_dir)
+        layout.addWidget(tabs)
 
         # Plot Button
         button_plot = QPushButton("Plot")
         button_plot.clicked.connect(self.plot_and_save)
         layout.addWidget(button_plot)
 
-        self.canvas = FigureCanvas(plt.Figure(figsize=(self.settings.width, self.settings.height), dpi=self.settings.dpi/2))
-        layout.addWidget(self.canvas)
+        # Scroll Area for Image
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.canvas = FigureCanvas(plt.Figure(figsize=(self.settings.width, self.settings.height), dpi=self.settings.dpi/2))        
+        self.scroll_area.setWidget(self.canvas)
+        layout.addWidget(self.scroll_area)
+
+        #Canvas Area
+
 
 
         self.setLayout(layout)
+
 
     def select_file(self):
         file, _ = QFileDialog.getOpenFileName(self, "Select File", "", "Text Files (*.statistics);;All Files (*)")
@@ -287,7 +297,12 @@ class SSRStatisticsStackedPlotter(QWidget):
 
         ax_main = fig.add_subplot(111)
 
-        colors = plt.get_cmap(self.settings.color_scheme)(range(len(columns)))
+        cmap = plt.get_cmap(self.settings.color_scheme)
+        if len(columns) > cmap.N:
+            colors = [cmap(i % cmap.N) for i in range(len(columns))]
+        else:
+            colors = [cmap(i) for i in range(len(columns))]
+
         lefts = [0] * len(species)
 
         for i, col in enumerate(columns):
@@ -337,7 +352,7 @@ class SSRStatisticsStackedPlotter(QWidget):
 
         if self.settings.save_directory:
             save_path = f"{self.settings.save_directory}/ssr_plot.png"
-            self.canvas.figure.savefig(save_path, dpi=200)
+            self.canvas.figure.savefig(save_path, dpi=500)
             QMessageBox.information(self, "Info", f"Plot saved to {save_path}")
         else:
             QMessageBox.warning(self, "Warning", "Please select a save directory first.")

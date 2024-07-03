@@ -36,7 +36,7 @@ class PiplotApp(QMainWindow):
 
         # Default color
         self.default_color = 'black'
-        self.selected_dpi = 200  # Default DPI
+        self.selected_dpi = 300  # Default DPI
 
         self.initUI()
 
@@ -91,7 +91,7 @@ class PiplotApp(QMainWindow):
         self.dpi_label = QLabel('Select DPI:')
         self.dpi_spinbox = QSpinBox()
         self.dpi_spinbox.setMinimum(50)
-        self.dpi_spinbox.setMaximum(300)
+        self.dpi_spinbox.setMaximum(500)
         self.dpi_spinbox.setValue(self.selected_dpi)
         self.dpi_spinbox.valueChanged.connect(self.selectDPI)
         
@@ -255,16 +255,19 @@ class PiplotApp(QMainWindow):
             fig_height = self.fig_height_spinbox.value()
             marker_size = self.marker_size_spinbox.value()
             marker_width = self.marker_width_spinbox.value()
-
+            
             # Create figure with specified DPI and size
             fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=self.selected_dpi)
 
             if self.chart_type_combo.currentText() == 'Line Chart':
                 color = self.selected_color if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked() else self.default_color
-                ax.plot(midpoints, y_data, marker='o', color=color, markersize=marker_size, markeredgewidth=marker_width)
+                ax.plot(midpoints, y_data, marker='o', color=color, markersize=marker_size/5, markeredgewidth=marker_width)
             elif self.chart_type_combo.currentText() == 'Bar Chart':
                 color = self.selected_color if hasattr(self, 'selected_color') and not self.default_color_checkbox.isChecked() else self.default_color
                 ax.bar(midpoints, y_data, color=color, edgecolor='gray')
+                
+            # Customize plot
+            font = self.selected_font if not self.default_font_checkbox.isChecked() else self.default_font
 
             # Add standard line if specified
             try:
@@ -275,7 +278,7 @@ class PiplotApp(QMainWindow):
                 # Mark points above the standard line
                 above_standard = y_data > standard_line_value
                 for midpoint, value in zip(midpoints[above_standard], y_data[above_standard]):
-                    ax.text(midpoint, value, f'({midpoint}, {value:.5f})', ha='center', va='bottom', fontsize=4)
+                    ax.text(midpoint, value, f'({value:.5f})', ha='center', va='bottom', fontname=font.family(), fontsize=font.pointSize(),fontstyle='italic' if font.italic() else 'normal')
 
             except ValueError:
                 pass  # No valid standard line provided

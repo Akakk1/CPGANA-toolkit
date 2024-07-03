@@ -155,7 +155,9 @@ class RepeatFinderGUI(QMainWindow):
             raise ValueError(f"Error processing file '{input_file}': {e}")
 
     @staticmethod
-    def find_repeat_regions(sequence,input_file):
+    def find_repeat_regions(sequence, input_file):
+        from Bio.Seq import Seq
+
         replace_dict = {"A": "T", "C": "G", "T": "A", "G": "C", "a": "t", "c": "g", "t": "a", "g": "c"}
         sequence = sequence.lower()
         rev_seq = str(Seq(sequence).reverse_complement())
@@ -197,6 +199,9 @@ class RepeatFinderGUI(QMainWindow):
         while sequence[end1 - 1] == replace_dict[sequence[start2]]:
             end1 += 1
             start2 -= 1
+
+        result = ""
+        new_start = new_end = None  # Initialize variables
 
         if start1 != 0:
             if end2 != len(sequence):
@@ -246,16 +251,19 @@ class RepeatFinderGUI(QMainWindow):
                                 f"IRa:{new_start + 2}-{end1 - 1}"
                             )
                 else:
+                    new_start = 0  # Initialize to avoid NoneType error
                     result = (
                         f"LSC:{end1}-{start2 + 1}\tIRb:{start2 + 2}-{len(sequence)}\tSSC:{1}-{new_start + 1}\t"
                         f"IRa:{new_start + 2}-{end1 - 1}"
                     )
             else:
+                new_start = 0  # Initialize to avoid NoneType error
                 result = (
                     f"LSC:{1}-{new_start + 1}\tIRb:{new_start + 2}-{end1 - 1}\tSSC:{end1}-{start2 + 1}\t"
                     f"IRa:{start2 + 2}-{new_end}"
                 )
         else:
+            new_start = 0  # Initialize to avoid NoneType error
             result = (
                 f"LSC:{end1}-{start2 + 1}\tIRb:{start2 + 2}-{len(sequence)},1-{new_start + 1}\tSSC:{new_start + 2}-{end1 - 1}"
             )
