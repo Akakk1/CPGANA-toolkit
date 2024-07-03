@@ -1,7 +1,7 @@
 # _**CPGANA-toolkit**_
 ###### _**Chloroplast Genome Analysis toolkit**_
 ![CPGANA-toolkit-icon](./data/cpgana.png)
-#[Read this in Chinese.](README_ZH.md)
+[Read this in Chinese.](README_ZH.md)
 # NOTE! This project includes third-party programs! See the third-party folder for details.
 ## Table of Contents
 1. [Introduction](#introduction)
