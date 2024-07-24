@@ -58,6 +58,7 @@ from modules.ui_modules.EmbeddedBrowser import EmbeddedBrowser
 from modules.function_modules.Sequence.Information_ui import GeneAnalysisApp
 from modules.function_modules.Sequence.Region_finder_ui import RepeatFinderGUI
 from modules.function_modules.Sequence.Seq_adj_ui import SequenceAdjustApp
+from modules.function_modules.Sequence.Seq_reversecomplement_ui import RegionReverseApp
 from modules.function_modules.Sequence.Seq_converse_ui import FileFormatConvertApp
 
 from modules.function_modules.Align.Simple_palign_ui import SimplePairwiseAlignmentApp
@@ -68,6 +69,7 @@ from modules.function_modules.RSCU.RSCU_plot_ui import RSCUVisualizeApp
 
 from modules.function_modules.Extract.Extract_cgene_IGS import commongeneAndIGSExtractApp
 from modules.function_modules.Extract.Extract_ccds import commoncdsExtractApp
+from modules.function_modules.Extract.Extract_ac import AcExtractApp
 
 from modules.function_modules.SSR.SSR_analysis_ui_s import SSRFindApp
 from modules.function_modules.SSR.SSR_length_sta_ui import SSRCounter_lengthApp
@@ -117,9 +119,11 @@ class CPGANAToolbar(QMainWindow):
                 "Information Get": GeneAnalysisApp,
                 "Region Find": RepeatFinderGUI,
                 "Sequence Adjustment": SequenceAdjustApp,
+                "Region Reverse Complement": RegionReverseApp,
                 "Sequence Format Conversion": FileFormatConvertApp
             },
             "Extract": {
+                "Extract Accession": AcExtractApp,
                 "Extract Common CDS": commoncdsExtractApp,
                 "Extract Common Gene and IGS": commongeneAndIGSExtractApp,
             },
@@ -171,6 +175,11 @@ class CPGANAToolbar(QMainWindow):
                     "KaKs Cluster Heatmap Plot": CHeatmapVisualizerApp
                 }
             },
+#           "Tree": {
+#               "0": ModelFinder,
+#               "1": Build,
+#               "2": TreeAnnotate
+#            },           
             "Others": {
                 "NCBI": "https://www.ncbi.nlm.nih.gov/",
                 "OGDraw": "https://chlorobox.mpimp-golm.mpg.de/OGDraw.html",
