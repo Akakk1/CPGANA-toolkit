@@ -90,6 +90,8 @@ from modules.function_modules.Pi.Pi_plot_v2_ui import PiplotApp_V2
 from modules.function_modules.Kaks.Transform_ui import KaksTransformApp
 from modules.function_modules.Kaks.Kaks_sta_ui import KaksStaApp
 from modules.function_modules.Kaks.Kaks_filter import KaKsValueProcessor
+from modules.function_modules.Kaks.Kaks_sig_ui import KaKsSigCalculatorApp
+from modules.function_modules.Kaks.Kaks_plot_ui import KaKsPlotterApp
 from modules.function_modules.Kaks.Kaks_C_heatmap_ui import CHeatmapVisualizerApp
 from modules.function_modules.Kaks.Kaks_heatmap_ui import HeatmapVisualizerApp
 
@@ -170,7 +172,9 @@ class CPGANAToolbar(QMainWindow):
                 "4.KaKs Calculator": "open_kaks_calculator",
                 "5.KaKs Result Statistics": KaksStaApp,
                 "6.KaKs Result Filter": KaKsValueProcessor,
+                "7.Calculate Significance": KaKsSigCalculatorApp,
                 "KaKs Plotter":{
+                    "KaKs Plot": KaKsPlotterApp,
                     "KaKs Heatmap Plot": HeatmapVisualizerApp,
                     "KaKs Cluster Heatmap Plot": CHeatmapVisualizerApp
                 }
