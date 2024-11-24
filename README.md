@@ -45,6 +45,11 @@ CPGANA-toolkit does not require any non-standard hardware.
 ### Download and Installation
 1. **(Recommended) Using the Windows executable (.exe)**: We use Pyinstaller to package the Python code into an .exe program and package it into an .msi for easy installation. Go to the Release page(https://github.com/Akakk1/CPGANA-toolkit/releases/tag/v1.1), download the latest version of the .msi file, which comes with a clear installation process.
 
+_If the Release page is inaccessible or you encounter issues running the MSI file, preventing further progress, a ZIP archive containing the same files has been provided. Extract the archive and run the `CPGANAtoolkit.exe` file to start the program. Due to GitHub repository limitations, we have provided a cloud drive link._
+
+- https://drive.google.com/file/d/1GuhE2Bn4WEcvPHdTK0PQqRkgyt61TUIb/view?usp=sharing (drive.google.com)
+- https://pan.baidu.com/s/1yVgWOF1voGx4bL4ZvBLfjg?pwd=r3be (pan.baidu.com)
+
 2. **(Not recommended) Using Python code**: Download the CPGANA toolkit code from GitHub and run it.
 ```bash
 git clone https://github.com/Akakk1/CPGANA-toolkit.git
