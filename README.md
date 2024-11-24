@@ -43,7 +43,7 @@ CPGANA-toolkit does not require any non-standard hardware.
 - PyQtWebEngine==5.15.6
 
 ### Download and Installation
-1. **(Recommended) Using the Windows executable (.exe)**: We use Pyinstaller to package the Python code into an .exe program and package it into an .msi for easy installation. Go to the Release page, download the latest version of the .msi file, which comes with a clear installation process.
+1. **(Recommended) Using the Windows executable (.exe)**: We use Pyinstaller to package the Python code into an .exe program and package it into an .msi for easy installation. Go to the Release page(https://github.com/Akakk1/CPGANA-toolkit/releases/tag/v1.1), download the latest version of the .msi file, which comes with a clear installation process.
 
 2. **(Not recommended) Using Python code**: Download the CPGANA toolkit code from GitHub and run it.
 ```bash
